@@ -58,7 +58,6 @@ GUI features:
 1. Train both models.
 2. Launch the drawing app.
 3. Draw multiple digits and show ANN vs CNN verdict behavior.
-4. Capture screenshot(s) for your local documentation/report.
 
 ## Notes
 
