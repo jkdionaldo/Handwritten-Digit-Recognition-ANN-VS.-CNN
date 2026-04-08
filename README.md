@@ -26,10 +26,12 @@ pip install -r requirements.txt
 python train_mnist_models.py --epochs 10 --batch-size 128 --seed 42 --validation-split 0.1 --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras
 ```
 
-To keep the console open at the end and close it manually with Enter:
+By default, the script now waits at the end so you can review logs and press Enter to close.
+
+If you want it to close immediately after training:
 
 ```bash
-python train_mnist_models.py --epochs 10 --batch-size 128 --seed 42 --validation-split 0.1 --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras --wait-on-exit
+python train_mnist_models.py --epochs 10 --batch-size 128 --seed 42 --validation-split 0.1 --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras --no-wait-on-exit
 ```
 
 This performs:
