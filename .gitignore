@@ -1,0 +1,3 @@
+# Exclude local/non-submission artifacts from GitHub
+archive_not_for_grading/
+MIDTERM_DOCUMENTATION.txt
