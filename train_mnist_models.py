@@ -2,6 +2,8 @@ from __future__ import annotations
 # pyright: reportMissingModuleSource=false
 
 import argparse
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -112,10 +114,18 @@ def parse_args() -> argparse.Namespace:
         default="mnist_cnn.keras",
         help="Output path for CNN model (.keras or .h5).",
     )
+    parser.set_defaults(wait_on_exit=True)
     parser.add_argument(
         "--wait-on-exit",
+        dest="wait_on_exit",
         action="store_true",
-        help="Wait for Enter key before closing so you can review training logs.",
+        help="Wait for Enter key before closing so you can review training logs (default).",
+    )
+    parser.add_argument(
+        "--no-wait-on-exit",
+        dest="wait_on_exit",
+        action="store_false",
+        help="Close immediately after training finishes.",
     )
     return parser.parse_args()
 
@@ -124,10 +134,24 @@ def maybe_wait_on_exit(wait_on_exit: bool) -> None:
     if not wait_on_exit:
         return
 
+    prompt = "\nTraining is done. Press Enter to close... "
+
     try:
-        input("\nTraining is done. Press Enter to close... ")
+        if sys.stdin is not None and sys.stdin.isatty():
+            input(prompt)
+            return
+    except (EOFError, OSError):
+        pass
+
+    if os.name == "nt":
+        # Fallback for launch modes where stdin is not attached to the console.
+        os.system("pause")
+        return
+
+    print(prompt, end="")
+    try:
+        input()
     except EOFError:
-        # No interactive stdin available (for example, non-interactive runners).
         pass
 
 
