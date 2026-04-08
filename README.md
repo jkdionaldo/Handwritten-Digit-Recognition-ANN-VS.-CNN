@@ -11,14 +11,6 @@ This repository is organized for rubric-focused grading and demo.
 - `MIDTERM_DOCUMENTATION.txt`: rubric mapping, implementation notes, and test evidence.
 - `requirements.txt`: required Python packages for training and GUI.
 
-## Archived Non-Grading Files
-
-Legacy CSV-based scripts and artifacts were moved to keep the root clean:
-
-- `archive_not_for_grading/legacy_csv_pipeline/`
-
-These files are not part of the final rubric demo workflow.
-
 ## 1. Setup
 
 Use Python 3.10+.

@@ -1,0 +1,211 @@
+MIDTERM PROJECT DOCUMENTATION
+
+Course: CSC 126
+Project: Handwritten Digit Recognition using ANN and CNN
+Date: April 5, 2026
+Prepared by: ____________________
+Section: ____________________
+
+==================================================
+1) PROJECT OBJECTIVE
+==================================================
+Build and evaluate ANN and CNN models on the MNIST dataset, then deploy both models in a minimalist Tkinter and OpenCV drawing application for real-time handwritten digit recognition with side-by-side model comparison.
+
+==================================================
+2) RUBRIC COMPLIANCE CHECKLIST
+==================================================
+[PASS] Download MNIST dataset
+- Implemented in train_mnist_models.py using keras.datasets.mnist.load_data().
+
+[PASS] Preprocess data
+- Normalization: pixel values scaled to 0-1 by dividing by 255.0.
+- Reshaping:
+  - ANN data reshaped to 28x28 input.
+  - CNN data reshaped to 28x28x1 input.
+- One-hot encoding of labels using keras.utils.to_categorical().
+
+[PASS] ANN model requirements
+- ANN accepts 28x28 input.
+- Flatten layer is inside the ANN model.
+- Includes hidden Dense layers.
+- Output Dense layer uses softmax for 10 classes.
+
+[PASS] CNN model requirements
+- Includes Conv2D layers.
+- Includes MaxPooling2D layers.
+- Includes Dense output layer for 10 classes.
+
+[PASS] Train and evaluate both models
+- Both ANN and CNN are trained using model.fit().
+- Both models evaluated with model.evaluate().
+- Accuracy and loss are printed.
+- Per-digit accuracy (0-9) is printed for clearer evaluation.
+
+[PASS] Save both trained models
+- ANN and CNN are saved to files via CLI paths.
+- Supports .keras or .h5 output formats for later GUI use.
+
+[PASS] Drawing GUI application requirements
+- White drawing canvas for mouse input.
+- Predict button included.
+- Clear button included.
+- Drawn image preprocessing includes grayscale-like pipeline, crop, center, resize to 28x28, and normalization to 0-1.
+- Pre-trained ANN and CNN models are both loaded.
+- Side-by-side predictions from ANN and CNN are displayed with confidence on a single click.
+- Minimalist fixed-size layout is used so UI components do not stretch awkwardly.
+- Confidence values are shown in short fixed-width format for clean alignment.
+
+
+[PLUS POINTS] Side-by-Side Comparison, Verdict Bar, and Minimalist UI
+- Added ANN vs CNN simultaneous prediction output on the interface.
+- Added a professional "Verdict" status bar at the bottom of the app, which:
+  - Highlights if both models agree (Match),
+  - Declares "CNN Superior" or "ANN Superior" if one model is more confident,
+  - Warns for "Low Confidence" if both models are unsure (<50%),
+  - Uses color and technical language for clarity and rubric alignment.
+- The window now opens centered on the screen for better demo visibility.
+- All UI texts and verdicts are clear, concise, and technically sound.
+- (screenshot here)
+
+Technical rationale: The verdict bar directly compares ANN and CNN confidence for each input, fulfilling the rubric's requirement to analyze and compare model performance. The CNN is highlighted as superior when its confidence is higher, reflecting its spatial feature extraction advantage. Low-confidence warnings help users improve their input and demonstrate robust error handling.
+- Added compact result cards and shortened labels to improve visual clarity during demo.
+- Fixed long percentage text overflow by formatting confidence values consistently.
+
+==================================================
+3) IMPLEMENTATION PROCESS SUMMARY
+==================================================
+Step 1: Model Training Script
+- Created train_mnist_models.py to train ANN and CNN in one script.
+- Added CLI options for epochs, batch size, seed, validation split, and output model paths.
+
+Step 2: Drawing GUI Script
+- Created digit_draw_app.py using Tkinter and OpenCV.
+- Added white canvas, Predict button, and Clear button.
+- Added side-by-side ANN and CNN prediction display with confidence values.
+- Added comparison status (agreement/disagreement) for easier model evaluation during demo.
+- Redesigned the interface into a minimalist fixed-size layout.
+- Reworked result display using compact cards to prevent awkward expansion when percentages are long.
+
+Step 3: Input Preprocessing Improvements
+- Replaced sparse point drawing with smoother continuous stroke drawing.
+- Added automatic bounding-box crop, centering, and MNIST-style resize before inference.
+
+Step 4: Accuracy Improvements for All Digits
+- Used a stronger and stable CNN architecture for class-wide performance.
+- Added class-balanced validation split to avoid bias across digit classes.
+- Added per-digit accuracy reporting to monitor all classes (0-9).
+
+Step 5: Rubric Alignment Review
+- Updated ANN to flatten inside the model (rubric wording compliance).
+- Cleaned documentation to prioritize ANN+CNN workflow and GUI execution steps.
+
+==================================================
+4) ISSUES ENCOUNTERED AND HOW THEY WERE FIXED
+==================================================
+Issue 1: GUI closes immediately on startup
+- Cause: cv2 was missing in the active terminal Python interpreter.
+- Fix: Installed OpenCV in the same interpreter used by python command.
+- Command used: python -m pip install opencv-python
+- Verification: python -c "import cv2; print(cv2.__version__)"
+
+Issue 2: GUI cannot load model file
+- Cause: mnist_cnn.keras did not exist before training.
+- Fix: Trained model first using train_mnist_models.py then launched GUI.
+
+Issue 3: Lower prediction reliability on hand-drawn digits
+- Cause: mismatch between user drawing style and MNIST input format.
+- Fix: improved GUI preprocessing pipeline (crop, center, resize, normalize).
+
+Issue 3b: Need easier model comparison for grading and demo
+- Cause: single-model output made it hard to compare ANN vs CNN performance live.
+- Fix: updated GUI to run both ANN and CNN on the same drawing and show both outputs side by side.
+
+Issue 3c: UI looked awkward when confidence text became long
+- Cause: long result strings caused layout stretching and uneven spacing.
+- Fix: switched to minimalist fixed-size UI, compact result cards, and fixed-width confidence format.
+
+Issue 4: Rubric mismatch for ANN flatten requirement
+- Cause: ANN initially consumed already flattened data without a Flatten layer in architecture.
+- Fix: ANN now accepts 28x28 input and includes layers.Flatten() in the model.
+
+Issue 5: Search utility unavailable in terminal
+- Cause: rg (ripgrep) command was not installed.
+- Fix: Used PowerShell Select-String as fallback for code review and evidence checks.
+
+==================================================
+5) FINAL TEST SNAPSHOT (STRONG RUN)
+==================================================
+Training command used:
+python train_mnist_models.py --epochs 5 --batch-size 256 --seed 42 --validation-split 0.1 --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras
+
+Observed results:
+- ANN Test Accuracy: 0.9748
+- CNN Test Accuracy: 0.9927
+
+CNN per-digit accuracy:
+- Digit 0: 0.9959
+- Digit 1: 0.9991
+- Digit 2: 0.9981
+- Digit 3: 0.9970
+- Digit 4: 0.9959
+- Digit 5: 0.9944
+- Digit 6: 0.9937
+- Digit 7: 0.9874
+- Digit 8: 0.9846
+- Digit 9: 0.9802
+
+==================================================
+6) REPRODUCIBLE RUN COMMANDS
+==================================================
+Environment setup:
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+Train both models:
+python train_mnist_models.py --epochs 10 --batch-size 128 --seed 42 --validation-split 0.1 --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras
+
+Launch drawing GUI:
+python digit_draw_app.py --ann-model-path mnist_ann.keras --cnn-model-path mnist_cnn.keras
+
+==================================================
+7) CONCLUSION
+==================================================
+The final project follows the midterm rubric requirements for:
+- dataset loading and preprocessing,
+- ANN and CNN model design,
+- training and evaluation,
+- model saving for later use,
+- and deployment in a GUI handwritten digit recognizer.
+
+Additional enhancement for plus points:
+- Side-by-side ANN vs CNN prediction comparison in the GUI for the same handwritten input.
+- Minimalist UI redesign with fixed-width confidence display for cleaner and more professional presentation.
+
+The final CNN model shows high and balanced performance across all digits and is integrated successfully into the drawing application.
+
+==================================================
+8) PROJECT ORGANIZATION CLEANUP (APRIL 8, 2026)
+==================================================
+To improve submission clarity and align with grading criteria, non-rubric legacy files were moved out of the root folder.
+
+Archived folder:
+- archive_not_for_grading/legacy_csv_pipeline/
+
+Moved legacy files:
+- train_model.py
+- preprocess.py
+- predict_handwritten.py
+- mnist_model.h5
+- test1.csv
+
+Final grading-focused root files:
+- train_mnist_models.py
+- digit_draw_app.py
+- mnist_ann.keras
+- mnist_cnn.keras
+- README.md
+- MIDTERM_DOCUMENTATION.txt
+- requirements.txt
+
+This cleanup ensures the submitted project structure is concise, rubric-aligned, and easy for the instructor to run and evaluate.
