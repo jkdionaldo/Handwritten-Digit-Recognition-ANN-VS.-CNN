@@ -112,7 +112,23 @@ def parse_args() -> argparse.Namespace:
         default="mnist_cnn.keras",
         help="Output path for CNN model (.keras or .h5).",
     )
+    parser.add_argument(
+        "--wait-on-exit",
+        action="store_true",
+        help="Wait for Enter key before closing so you can review training logs.",
+    )
     return parser.parse_args()
+
+
+def maybe_wait_on_exit(wait_on_exit: bool) -> None:
+    if not wait_on_exit:
+        return
+
+    try:
+        input("\nTraining is done. Press Enter to close... ")
+    except EOFError:
+        # No interactive stdin available (for example, non-interactive runners).
+        pass
 
 
 def train_and_evaluate_ann(
@@ -229,57 +245,60 @@ def report_per_digit_accuracy(model: keras.Model, x_test: np.ndarray, y_test_ohe
 
 def main() -> None:
     args = parse_args()
-    keras.utils.set_random_seed(args.seed)
+    try:
+        keras.utils.set_random_seed(args.seed)
 
-    x_train_ann, x_test_ann, x_train_cnn, x_test_cnn, y_train_ohe, y_test_ohe = (
-        load_and_preprocess_data()
-    )
+        x_train_ann, x_test_ann, x_train_cnn, x_test_cnn, y_train_ohe, y_test_ohe = (
+            load_and_preprocess_data()
+        )
 
-    train_idx, val_idx = split_indices_by_class(
-        y_one_hot=y_train_ohe,
-        validation_split=args.validation_split,
-        seed=args.seed,
-    )
+        train_idx, val_idx = split_indices_by_class(
+            y_one_hot=y_train_ohe,
+            validation_split=args.validation_split,
+            seed=args.seed,
+        )
 
-    x_ann_train, y_ann_train = x_train_ann[train_idx], y_train_ohe[train_idx]
-    x_ann_val, y_ann_val = x_train_ann[val_idx], y_train_ohe[val_idx]
+        x_ann_train, y_ann_train = x_train_ann[train_idx], y_train_ohe[train_idx]
+        x_ann_val, y_ann_val = x_train_ann[val_idx], y_train_ohe[val_idx]
 
-    x_cnn_train, y_cnn_train = x_train_cnn[train_idx], y_train_ohe[train_idx]
-    x_cnn_val, y_cnn_val = x_train_cnn[val_idx], y_train_ohe[val_idx]
+        x_cnn_train, y_cnn_train = x_train_cnn[train_idx], y_train_ohe[train_idx]
+        x_cnn_val, y_cnn_val = x_train_cnn[val_idx], y_train_ohe[val_idx]
 
-    ann_model, _, _ = train_and_evaluate_ann(
-        x_train_ann=x_ann_train,
-        y_train_ohe=y_ann_train,
-        x_val_ann=x_ann_val,
-        y_val_ohe=y_ann_val,
-        x_test_ann=x_test_ann,
-        y_test_ohe=y_test_ohe,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-    )
+        ann_model, _, _ = train_and_evaluate_ann(
+            x_train_ann=x_ann_train,
+            y_train_ohe=y_ann_train,
+            x_val_ann=x_ann_val,
+            y_val_ohe=y_ann_val,
+            x_test_ann=x_test_ann,
+            y_test_ohe=y_test_ohe,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+        )
 
-    cnn_model, _, _ = train_and_evaluate_cnn(
-        x_train_cnn=x_cnn_train,
-        y_train_ohe=y_cnn_train,
-        x_val_cnn=x_cnn_val,
-        y_val_ohe=y_cnn_val,
-        x_test_cnn=x_test_cnn,
-        y_test_ohe=y_test_ohe,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-    )
+        cnn_model, _, _ = train_and_evaluate_cnn(
+            x_train_cnn=x_cnn_train,
+            y_train_ohe=y_cnn_train,
+            x_val_cnn=x_cnn_val,
+            y_val_ohe=y_cnn_val,
+            x_test_cnn=x_test_cnn,
+            y_test_ohe=y_test_ohe,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+        )
 
-    report_per_digit_accuracy(ann_model, x_test_ann, y_test_ohe, model_name="ANN")
-    report_per_digit_accuracy(cnn_model, x_test_cnn, y_test_ohe, model_name="CNN")
+        report_per_digit_accuracy(ann_model, x_test_ann, y_test_ohe, model_name="ANN")
+        report_per_digit_accuracy(cnn_model, x_test_cnn, y_test_ohe, model_name="CNN")
 
-    ensure_parent_dir(args.ann_model_path)
-    ensure_parent_dir(args.cnn_model_path)
+        ensure_parent_dir(args.ann_model_path)
+        ensure_parent_dir(args.cnn_model_path)
 
-    ann_model.save(args.ann_model_path)
-    cnn_model.save(args.cnn_model_path)
+        ann_model.save(args.ann_model_path)
+        cnn_model.save(args.cnn_model_path)
 
-    print("\nSaved ANN model to:", args.ann_model_path)
-    print("Saved CNN model to:", args.cnn_model_path)
+        print("\nSaved ANN model to:", args.ann_model_path)
+        print("Saved CNN model to:", args.cnn_model_path)
+    finally:
+        maybe_wait_on_exit(args.wait_on_exit)
 
 
 if __name__ == "__main__":
