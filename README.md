@@ -8,7 +8,6 @@ This repository is organized for rubric-focused grading and demo.
 - `digit_draw_app.py`: minimalist Tkinter + OpenCV drawing app with side-by-side ANN/CNN predictions.
 - `mnist_ann.keras`: trained ANN model.
 - `mnist_cnn.keras`: trained CNN model.
-- `MIDTERM_DOCUMENTATION.txt`: rubric mapping, implementation notes, and test evidence.
 - `requirements.txt`: required Python packages for training and GUI.
 
 ## 1. Setup
@@ -59,7 +58,7 @@ GUI features:
 1. Train both models.
 2. Launch the drawing app.
 3. Draw multiple digits and show ANN vs CNN verdict behavior.
-4. Capture screenshot(s) for `MIDTERM_DOCUMENTATION.txt` where indicated.
+4. Capture screenshot(s) for your local documentation/report.
 
 ## Notes
 
